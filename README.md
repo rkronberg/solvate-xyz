@@ -1,5 +1,5 @@
 # solvate-xyz
-Script for solvating atomic structures written in .xyz format. Works with both orthogonal and non-orthogonal cells. Solvent structure is generated with GROMACS (v. 5.0 or newer) using the Simple Point Charge (SPC) water model. ASE version 3.9 or later is required.
+Script for solvating atomic structures written in .xyz format. Works with both orthogonal and non-orthogonal cells. Solvent structure is generated with GROMACS (v. 5.0 or later) using the Simple Point Charge (SPC) water model. ASE version 3.9 or later is required.
 
 ## Usage
 
