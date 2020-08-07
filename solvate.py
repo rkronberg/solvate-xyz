@@ -1,7 +1,7 @@
 """
 Tool for solvating atomic structures written in .xyz format
 Default solvent is Simple Point Charge (SPC) water
-GROMACS-5.0 or newer required
+GROMACS-5.0 and ASE-3.9 or later required
 Works with both orthogonal and non-orthogonal cells
 
 author: Rasmus Kronberg
