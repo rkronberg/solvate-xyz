@@ -1,5 +1,5 @@
 """
-Tool for solvating an atomic structure of .xyz format
+Tool for solvating atomic structures written in .xyz format
 Default solvent is Simple Point Charge (SPC) water
 GROMACS-5.0 or newer required
 Works with both orthogonal and non-orthogonal cells
@@ -26,7 +26,6 @@ def angle(u, v):
 def cleanup(file, solv):
 
     # Cleanup .xyz so that programs such as ase-gui understands the content
-
     # Fix header
     string="sed -i 's/Properties.*//' %s" % file
     os.system(string)
