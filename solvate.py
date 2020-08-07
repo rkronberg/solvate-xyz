@@ -87,20 +87,17 @@ def main():
 
 	# Wrap atoms in fractional coordinate space without breaking water molecules
 	for atom in solv:
-		frac = np.matmul(np.linalg.inv(cell.T), atom.position)
-		frac = (frac + 1.0) % 1.0
-		cart = np.matmul(cell.T, frac)
-		shift = cart - atom.position
 
-		# Original atoms
-		if atom.index < len(xyz):
+		# Original atoms and water oxygens
+		if atom.index < len(xyz) or atom.symbol == 'O':
+			frac = np.matmul(np.linalg.inv(cell.T), atom.position)
+			frac = (frac + 1.0) % 1.0
+			cart = np.matmul(cell.T, frac)
+			shift = cart - atom.position
 			atom.position = cart
 
-		# Solvent
-		elif atom.index >= len(xyz) and atom.symbol == 'O':
-			atom.position = cart
-
-			# Shift O-bound hydrogens accordingly
+		# Shift water hydrogens accordingly
+		if atom.index >= len(xyz) and atom.symbol == 'O':
 			solv[atom.index + 1].position = solv[atom.index + 1].position + shift
 			solv[atom.index + 2].position = solv[atom.index + 2].position + shift
 
