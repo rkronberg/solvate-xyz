@@ -5,6 +5,7 @@ GROMACS-5.0 and ASE-3.9 or later required
 Works with both orthogonal and non-orthogonal cells
 
 author: Rasmus Kronberg
+email: rasmus.kronberg@aalto.fi
 """
 
 import sys, os
@@ -87,7 +88,6 @@ def main():
 
 	# Wrap atoms in fractional coordinate space without breaking water molecules
 	for atom in solv:
-
 		# Original atoms and water oxygens
 		if atom.index < len(xyz) or atom.symbol == 'O':
 			frac = np.matmul(np.linalg.inv(cell.T), atom.position)
@@ -95,11 +95,10 @@ def main():
 			cart = np.matmul(cell.T, frac)
 			shift = cart - atom.position
 			atom.position = cart
-
 		# Shift water hydrogens accordingly
 		if atom.index >= len(xyz) and atom.symbol == 'O':
-			solv[atom.index + 1].position = solv[atom.index + 1].position + shift
-			solv[atom.index + 2].position = solv[atom.index + 2].position + shift
+			solv[atom.index + 1].position += shift
+			solv[atom.index + 2].position += shift
 
 	# Convert back to .xyz
 	write('tmp_solv.xyz', solv)
