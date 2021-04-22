@@ -8,33 +8,25 @@ author: Rasmus Kronberg
 email: rasmus.kronberg@aalto.fi
 """
 
-import sys
 import os
 import numpy as np
 from ase.io import read, write
+from argparse import ArgumentParser
+
 from utils import angle, pbc, cleanup
 
 
 def main():
 
-    # Read structure
-    try:
-        xyz = read(sys.argv[1])
-        print('Successfully read %s' % sys.argv[1])
-    except IndexError:
-        print('Usage: python3 solvate.py your_input.xyz \
-            a1 a2 a3 b1 b2 b3 c1 c2 c3')
-        print('Lattice vectors a, b and c are optional.')
-        exit()
+    xyz = read(inp)
+    print('Successfully read %s' % inp)
 
     # Try setting user-defined cell vectors
-    try:
-        lattice = np.array([float(x) for x in sys.argv[2:]]).reshape(3, 3)
+    if not lattice:
+        print('No user-defined cell vectors, importing vectors from input')
+    else:
         print('Setting user-defined cell vectors.')
         xyz.set_cell(lattice)
-    except ValueError:
-        print('Incomplete user-defined cell vectors, \
-            importing cell vectors from input file')
 
     # Write temporary .pdb file that GROMACS understands
     write('tmp.pdb', xyz)
@@ -66,9 +58,16 @@ def main():
     write('tmp_solv.xyz', solv)
 
     # Cleanup
-    outfile = cleanup('tmp_solv.xyz', elems)
-    print('Solvated structure written in %s' % outfile)
+    outfile = cleanup(inp, 'tmp_solv.xyz', elems)
+    print('Solvated structure written to %s' % outfile)
 
 
 if __name__ == '__main__':
+    parser = ArgumentParser(
+        description='Script for solvating .xyz atomic coordinate file')
+    parser.add_argument('-i', '--input', required=True, help='Input file')
+    parser.add_argument('--cell', default=[], nargs='+', help='Cell vectors')
+    args = parser.parse_args()
+    inp = args.input
+    lattice = args.cell
     main()

@@ -8,7 +8,6 @@ email: rasmus.kronberg@aalto.fi
 import sys
 import os
 import numpy as np
-from ase.io import write
 
 
 def unitv(vector):
@@ -35,7 +34,7 @@ def pbc(xyz, solv, cell):
             cart = np.matmul(cell.T, frac)
             shift = cart - atom.position
             atom.position = cart
-        # Shift water hydrogens accordingly
+        # Shift water hydrogens accordingly (assume O->H->H order)
         if atom.index >= len(xyz) and atom.symbol == 'O':
             solv[atom.index + 1].position += shift
             solv[atom.index + 2].position += shift
@@ -43,22 +42,22 @@ def pbc(xyz, solv, cell):
     return solv
 
 
-def cleanup(file, elems):
+def cleanup(inp, file, elems):
 
     # Cleanup .xyz so that programs such as ase-gui understands the content
     # Fix header
     os.system("sed -i 's/Properties.*//' %s" % file)
 
     # Strip everything but symbols and coordinates
-    outfile = '%s-solvated.xyz' % sys.argv[1].strip('.xyz')
+    outfile = '%s-solvated.xyz' % inp.replace('.xyz', '')
     with open(outfile, 'w') as out:
         with open(file, 'r') as f:
             line = f.readline()
             while line != '':
                 tmp = line.strip().split()
                 if any(sym == tmp[0] for sym in elems):
-                    string = '%3s %10.5f %10.5f %10.5f \n'
-                    % (tmp[0], float(tmp[1]), float(tmp[2]), float(tmp[3]))
+                    arg = (tmp[0], float(tmp[1]), float(tmp[2]), float(tmp[3]))
+                    string = '%3s %10.5f %10.5f %10.5f \n' % arg
                     out.write(string)
                 else:
                     out.write(line)
