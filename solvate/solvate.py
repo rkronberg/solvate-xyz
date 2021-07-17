@@ -1,4 +1,4 @@
-"""
+'''
 Tool for solvating atomic structures written in .xyz format
 Default solvent is Simple Point Charge (SPC) water
 GROMACS-5.0 and ASE-3.9 or later required
@@ -6,7 +6,7 @@ Works with both orthogonal and non-orthogonal cells
 
 author: Rasmus Kronberg
 email: rasmus.kronberg@aalto.fi
-"""
+'''
 
 import os
 import numpy as np
@@ -18,15 +18,15 @@ from utils import angle, pbc, cleanup
 
 def main():
 
-    xyz = read(inp)
-    print('Successfully read %s' % inp)
+    xyz = read(args.input)
+    print('Successfully read %s' % args.input)
 
     # Try setting user-defined cell vectors
-    if not lattice:
+    if not args.cell:
         print('No user-defined cell vectors, importing vectors from input')
     else:
         print('Setting user-defined cell vectors.')
-        xyz.set_cell(lattice)
+        xyz.set_cell(args.cell)
 
     # Write temporary .pdb file that GROMACS understands
     write('tmp.pdb', xyz)
@@ -50,15 +50,14 @@ def main():
     solv = read('tmp_solv.pdb')
     elems = set(solv.get_chemical_symbols())
 
-    # Wrap atoms in fractional coordinate space without
-    # breaking water molecules
+    # Wrap atoms in fractional coordinate space without breaking H2O molecules
     solv = pbc(xyz, solv, cell)
 
     # Convert back to .xyz
     write('tmp_solv.xyz', solv)
 
     # Cleanup
-    outfile = cleanup(inp, 'tmp_solv.xyz', elems)
+    outfile = cleanup(args.input, 'tmp_solv.xyz', elems)
     print('Solvated structure written to %s' % outfile)
 
 
@@ -68,6 +67,4 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input', required=True, help='Input file')
     parser.add_argument('--cell', default=[], nargs='+', help='Cell vectors')
     args = parser.parse_args()
-    inp = args.input
-    lattice = args.cell
     main()

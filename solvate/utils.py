@@ -5,7 +5,6 @@ author: Rasmus Kronberg
 email: rasmus.kronberg@aalto.fi
 '''
 
-import sys
 import os
 import numpy as np
 
@@ -13,18 +12,22 @@ import numpy as np
 def unitv(vector):
 
     # Returns the unit vector
+
     return vector/np.linalg.norm(vector)
 
 
 def angle(u, v):
 
     # Returns the angle in degrees between vectors u and v
+
     uhat = unitv(u)
     vhat = unitv(v)
     return 360/(2*np.pi)*np.arccos(np.clip(np.dot(uhat, vhat), -1.0, 1.0))
 
 
 def pbc(xyz, solv, cell):
+
+    # Wrap atoms without breaking water molecules
 
     for atom in solv:
         # Original atoms and water oxygens
@@ -45,6 +48,7 @@ def pbc(xyz, solv, cell):
 def cleanup(inp, file, elems):
 
     # Cleanup .xyz so that programs such as ase-gui understands the content
+
     # Fix header
     os.system("sed -i 's/Properties.*//' %s" % file)
 
